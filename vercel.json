@@ -1,8 +1,9 @@
 {
+  "builds": [
+    { "src": "manage.py", "use": "@vercel/python" }
+  ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "api/wsgi.py"
-    }
-  ]
+    { "src": "/(.*)", "dest": "manage.py" }
+  ],
+  "outputDirectory": "staticfiles"
 }
