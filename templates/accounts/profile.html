@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - Fashion Site{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="mb-4">Profile</h2>
+        
+        <div class="profile-section">
+            <h4>User Information</h4>
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+        </div>
+        
+        <div class="profile-section">
+            <h4>Update Profile</h4>
+            <form method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ u_form.username.id_for_label }}" class="form-label">Username</label>
+                            {{ u_form.username }}
+                            {% if u_form.username.errors %}
+                                <div class="text-danger">
+                                    {{ u_form.username.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ u_form.email.id_for_label }}" class="form-label">Email</label>
+                            {{ u_form.email }}
+                            {% if u_form.email.errors %}
+                                <div class="text-danger">
+                                    {{ u_form.email.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ p_form.phone_number.id_for_label }}" class="form-label">Phone Number</label>
+                            {{ p_form.phone_number }}
+                            {% if p_form.phone_number.errors %}
+                                <div class="text-danger">
+                                    {{ p_form.phone_number.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ p_form.date_of_birth.id_for_label }}" class="form-label">Date of Birth</label>
+                            {{ p_form.date_of_birth }}
+                            {% if p_form.date_of_birth.errors %}
+                                <div class="text-danger">
+                                    {{ p_form.date_of_birth.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ p_form.address.id_for_label }}" class="form-label">Address</label>
+                    {{ p_form.address }}
+                    {% if p_form.address.errors %}
+                        <div class="text-danger">
+                            {{ p_form.address.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Update Profile</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

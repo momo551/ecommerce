@@ -1,0 +1,66 @@
+/* Custom styles for the fashion site */
+
+/* Product cards */
+.product-card {
+    transition: transform 0.2s;
+    margin-bottom: 20px;
+}
+
+.product-card:hover {
+    transform: scale(1.02);
+}
+
+.product-image {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Cart items */
+.cart-item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+}
+
+/* Profile page */
+.profile-section {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* Forms */
+.form-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+/* Buttons */
+.btn-cart {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-cart:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.btn-checkout {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-checkout:hover {
+    background-color: #0069d9;
+    border-color: #0062cc;
+}

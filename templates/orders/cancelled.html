@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Cancelled - Fashion Site{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="text-center">
+            <h2 class="mb-4">Order Cancelled</h2>
+            <div class="alert alert-warning">
+                <h4>Payment was cancelled</h4>
+                <p>Your order was not completed. You can try again or continue shopping.</p>
+            </div>
+            
+            <div class="mt-4">
+                <a href="{% url 'cart:cart_detail' %}" class="btn btn-primary">Return to Cart</a>
+                <a href="{% url 'products:product_list' %}" class="btn btn-secondary">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

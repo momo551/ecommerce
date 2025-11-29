@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Success - Fashion Site{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="text-center">
+            <h2 class="mb-4">Order Successful!</h2>
+            <div class="alert alert-success">
+                <h4>Thank you for your order!</h4>
+                <p>Your order #{{ order.id }} has been successfully placed.</p>
+                <p>We'll send you a confirmation email shortly.</p>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Order Details</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Order #:</strong> {{ order.id }}</p>
+                    <p><strong>Date:</strong> {{ order.created }}</p>
+                    <p><strong>Total:</strong> ${{ order.get_total_cost|floatformat:2 }}</p>
+                </div>
+            </div>
+            
+            <a href="{% url 'orders:order_history' %}" class="btn btn-primary">View Order History</a>
+            <a href="{% url 'products:product_list' %}" class="btn btn-secondary">Continue Shopping</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
