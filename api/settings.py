@@ -54,6 +54,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'api.urls'
+WSGI_APPLICATION = 'api.wsgi.app'
 
 TEMPLATES = [
     {
