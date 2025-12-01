@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Order, OrderItem
 from products.models import Product
+from notifications.utils import send_purchase_notification
 
 @login_required
 def checkout(request):
@@ -55,7 +56,10 @@ def checkout(request):
         
         # Clear the cart
         request.session['cart'] = {}
-        
+
+        # Send notification to admin
+        send_purchase_notification(order)
+
         # Redirect to payment processing
         return redirect('orders:payment_process', order_id=order.id)
     
