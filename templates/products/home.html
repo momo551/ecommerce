@@ -4,8 +4,8 @@
 
 {% block content %}
 <div class="jumbotron bg-light p-5 rounded mb-4">
-    <h1 class="display-4">Welcome to Fashion Site</h1>
-    <p class="lead">Discover the latest trends in fashion. Shop our exclusive collection of clothing and accessories.</p>
+    <h1 class="display-4">Welcome to E-commerce</h1>
+    <p class="lead">Discover a world of innovative products that meet your needs.</p>
     <hr class="my-4">
     <p>Find the perfect outfit for any occasion.</p>
     <a class="btn btn-primary btn-lg" href="{% url 'products:product_list' %}" role="button">Shop Now</a>
@@ -49,7 +49,11 @@
                         <p class="card-text">{{ product.description|truncatewords:10 }}</p>
                         <p class="card-text"><strong>${{ product.price }}</strong></p>
                         <a href="{{ product.get_absolute_url }}" class="btn btn-primary">View Details</a>
-                        <button class="btn btn-cart">Add to Cart</button>
+                        <form method="post" action="{% url 'cart:cart_add' product.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-cart">Add to Cart</button>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -1,82 +1,101 @@
 // Custom JavaScript for the fashion site
+console.log("Script loaded");
 
 // Update cart quantity
 function updateCartQuantity(productId, quantity) {
-    fetch(`/cart/update/${productId}/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({quantity: quantity})
+  fetch(`/cart/update/${productId}/`, {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": window.CSRF_TOKEN,
+    },
+    body: new URLSearchParams({ quantity: quantity }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        // Update the quantity display
+        document.getElementById(`quantity-${productId}`).value = quantity;
+        // Update the total price
+        document.getElementById(`total-price`).textContent = data.total_price;
+        // Show success message
+        alert("Cart updated successfully!");
+      } else {
+        alert("Error updating cart: " + data.error);
+      }
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Update the quantity display
-            document.getElementById(`quantity-${productId}`).value = quantity;
-            // Update the total price
-            document.getElementById(`total-price`).textContent = data.total_price;
-            // Show success message
-            alert('Cart updated successfully!');
-        } else {
-            alert('Error updating cart: ' + data.error);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error updating cart');
+    .catch((error) => {
+      console.error("Error:", error);
+      alert("Error updating cart");
     });
 }
 
 // Get CSRF token
 function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === name + "=") {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
     }
-    return cookieValue;
+  }
+  return cookieValue;
 }
 
 // Add to cart functionality
 function addToCart(productId) {
-    fetch(`/cart/add/${productId}/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({quantity: 1})
+  const csrfToken = getCookie("csrftoken");
+  console.log("CSRF_TOKEN:", csrfToken);
+  console.log("Sending request to:", `/cart/add/${productId}/`);
+  fetch(`/cart/add/${productId}/`, {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": csrfToken,
+      "X-Requested-With": "XMLHttpRequest",
+    },
+    body: new URLSearchParams({ quantity: 1 }),
+  })
+    .then((response) => {
+      console.log("Response status:", response.status);
+      return response.json();
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Update cart count in navbar
-            const cartCount = document.getElementById('cart-count');
-            if (cartCount) {
-                cartCount.textContent = data.cart_items_count;
-            }
-            // Show success message
-            alert('Product added to cart successfully!');
-        } else {
-            alert('Error adding to cart: ' + data.error);
+    .then((data) => {
+      console.log("Response data:", data);
+      if (data.success) {
+        // Update cart count in navbar
+        const cartCount = document.getElementById("cart-count");
+        if (cartCount) {
+          cartCount.textContent = data.cart_items_count;
         }
+        // Show success message
+        alert("Product added to cart successfully!");
+      } else {
+        alert("Error adding to cart: " + data.error);
+      }
     })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error adding to cart');
+    .catch((error) => {
+      console.error("Error:", error);
+      alert("Error adding to cart");
     });
 }
 
 // Document ready
-document.addEventListener('DOMContentLoaded', function() {
-    // Add any initialization code here
-    console.log('Fashion site loaded');
+document.addEventListener("DOMContentLoaded", function () {
+  // Add event listeners to all "Add to Cart" buttons
+  const addToCartButtons = document.querySelectorAll(".btn-cart");
+  console.log("Found buttons:", addToCartButtons.length);
+  addToCartButtons.forEach((button) => {
+    button.addEventListener("click", function () {
+      const productId = this.getAttribute("data-product-id");
+      console.log("Button clicked, productId:", productId);
+      if (productId) {
+        addToCart(productId);
+      }
+    });
+  });
+
+  console.log("Fashion site loaded");
 });

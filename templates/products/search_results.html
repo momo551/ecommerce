@@ -23,7 +23,7 @@
                         <p class="card-text">{{ product.description|truncatewords:10 }}</p>
                         <p class="card-text"><strong>${{ product.price }}</strong></p>
                         <a href="{{ product.get_absolute_url }}" class="btn btn-primary">View Details</a>
-                        <button class="btn btn-cart">Add to Cart</button>
+                        <button class="btn btn-cart" data-product-id="{{ product.id }}">Add to Cart</button>
                     </div>
                 </div>
             </div>
