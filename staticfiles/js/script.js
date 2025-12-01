@@ -1,4 +1,5 @@
 // Custom JavaScript for the fashion site
+console.log("Script loaded");
 
 // Update cart quantity
 function updateCartQuantity(productId, quantity) {
@@ -46,16 +47,23 @@ function getCookie(name) {
 
 // Add to cart functionality
 function addToCart(productId) {
+  const csrfToken = getCookie("csrftoken");
+  console.log("CSRF_TOKEN:", csrfToken);
+  console.log("Sending request to:", `/cart/add/${productId}/`);
   fetch(`/cart/add/${productId}/`, {
     method: "POST",
     headers: {
-      "X-CSRFToken": window.CSRF_TOKEN,
+      "X-CSRFToken": csrfToken,
       "X-Requested-With": "XMLHttpRequest",
     },
     body: new URLSearchParams({ quantity: 1 }),
   })
-    .then((response) => response.json())
+    .then((response) => {
+      console.log("Response status:", response.status);
+      return response.json();
+    })
     .then((data) => {
+      console.log("Response data:", data);
       if (data.success) {
         // Update cart count in navbar
         const cartCount = document.getElementById("cart-count");
