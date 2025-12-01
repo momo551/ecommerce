@@ -9,10 +9,14 @@ def send_purchase_notification(order):
     message = f"""
     A new purchase has been made.
 
+    Customer Details:
+    - Name: {order.first_name} {order.last_name}
+    - Email: {order.email}
+    - Phone: {order.phone}
+    - Address: {order.address}, {order.city}, {order.postal_code}
+
     Order Details:
     - Order ID: {order.id}
-    - Customer: {order.first_name} {order.last_name}
-    - Email: {order.email}
     - Total Cost: ${order.get_total_cost()}
     - Products:
     """
