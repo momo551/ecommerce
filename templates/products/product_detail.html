@@ -22,8 +22,11 @@
         <div class="mt-4">
             <form method="post" action="{% url 'cart:cart_add' product.id %}">
                 {% csrf_token %}
-                <input type="hidden" name="quantity" value="1">
-                <button type="submit" class="btn btn-cart btn-lg">Add to Cart</button>
+                <div class="input-group mb-3" style="width: 200px;">
+                    <span class="input-group-text">Quantity</span>
+                    <input type="number" name="quantity" value="1" min="1" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-cart btn-lg" data-product-id="{{ product.id }}">Add to Cart</button>
             </form>
         </div>
     </div>

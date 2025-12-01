@@ -1,22 +1,60 @@
 // Custom JavaScript for the fashion site
 console.log("Script loaded");
 
+// Update item total price on quantity change
+function updateItemTotal(productId, quantity, unitPrice) {
+  console.log("updateItemTotal called with:", productId, quantity, unitPrice);
+  const qty = parseInt(quantity);
+  const price = parseFloat(unitPrice);
+  const total = qty * price;
+  console.log("Calculated total:", total);
+  const itemTotalElement = document.getElementById(`item-total-${productId}`);
+  if (itemTotalElement) {
+    itemTotalElement.textContent = `$${total.toFixed(2)}`;
+    console.log("Updated item total element");
+  } else {
+    console.log("Item total element not found:", `item-total-${productId}`);
+  }
+  updateOverallTotal();
+}
+
+// Update overall cart total
+function updateOverallTotal() {
+  let overallTotal = 0;
+  const itemTotals = document.querySelectorAll('[id^="item-total-"]');
+  itemTotals.forEach((item) => {
+    const totalText = item.textContent.replace("$", "");
+    overallTotal += parseFloat(totalText);
+  });
+  document.getElementById(
+    "overall-total"
+  ).textContent = `$${overallTotal.toFixed(2)}`;
+}
+
 // Update cart quantity
 function updateCartQuantity(productId, quantity) {
+  console.log("updateCartQuantity called with:", productId, quantity);
+  const csrfToken = getCookie("csrftoken");
+  console.log("CSRF token:", csrfToken);
   fetch(`/cart/update/${productId}/`, {
     method: "POST",
     headers: {
-      "X-CSRFToken": window.CSRF_TOKEN,
+      "X-CSRFToken": csrfToken,
+      "X-Requested-With": "XMLHttpRequest",
     },
     body: new URLSearchParams({ quantity: quantity }),
   })
-    .then((response) => response.json())
+    .then((response) => {
+      console.log("Response status:", response.status);
+      return response.json();
+    })
     .then((data) => {
+      console.log("Response data:", data);
       if (data.success) {
         // Update the quantity display
         document.getElementById(`quantity-${productId}`).value = quantity;
         // Update the total price
-        document.getElementById(`total-price`).textContent = data.total_price;
+        document.getElementById("overall-total").textContent = data.total_price;
         // Show success message
         alert("Cart updated successfully!");
       } else {
@@ -94,6 +132,27 @@ document.addEventListener("DOMContentLoaded", function () {
       if (productId) {
         addToCart(productId);
       }
+    });
+  });
+
+  // Add event listeners to quantity inputs for automatic price update
+  const quantityInputs = document.querySelectorAll('input[id^="quantity-"]');
+  console.log("Found quantity inputs:", quantityInputs.length);
+  quantityInputs.forEach((input, index) => {
+    console.log(
+      `Attaching listener to input ${index}:`,
+      input.id,
+      "data-product-id:",
+      input.getAttribute("data-product-id"),
+      "data-unit-price:",
+      input.getAttribute("data-unit-price")
+    );
+    input.addEventListener("input", function () {
+      const productId = this.getAttribute("data-product-id");
+      const unitPrice = parseFloat(this.getAttribute("data-unit-price"));
+      const quantity = this.value;
+      console.log("Quantity changed:", productId, quantity, unitPrice);
+      updateItemTotal(productId, quantity, unitPrice);
     });
   });
 
