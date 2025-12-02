@@ -29,6 +29,6 @@ def send_purchase_notification(order):
         subject,
         message,
         settings.DEFAULT_FROM_EMAIL,
-        ['admin@gmail.com'],  # Replace with actual admin Gmail address
+        ['momo55265526@gmail.com'],  # Admin email address
         fail_silently=False,
     )
