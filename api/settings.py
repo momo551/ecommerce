@@ -103,6 +103,9 @@ if 'test' in sys.argv:
     }
 
 
+# settings.py
+LITELLML_API_KEY = "YOUR_API_KEY_HERE"
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
