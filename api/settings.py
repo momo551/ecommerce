@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 from decouple import config
+import os
+import sys
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,6 +46,8 @@ INSTALLED_APPS = [
     'cart',
     'orders',
     'notifications',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -79,12 +84,7 @@ TEMPLATES = [
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 # Note: Django modules for using databases are not support in serverless
-# environments like Vercel. You can use a database over HTTP, hosted elsewhere.
-import dj_database_url
-from pathlib import Path
-import os
-
-BASE_DIR = Path(__file__).resolve().parent.parent
+# environments like Vercel. You can use a database over HTTP, hosted elsewhere
 
 DATABASES = {
     'default': dj_database_url.parse(
@@ -94,7 +94,7 @@ DATABASES = {
     )
 }
 
-import sys
+
 
 if 'test' in sys.argv:
     DATABASES['default']['NAME'] = 'neondb'  # استخدم نفس قاعدة البيانات
@@ -141,22 +141,23 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-import os
-from pathlib import Path
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+# Static Files
 STATIC_URL = '/static/'
-
-# المجلد اللي هيتم تجميع كل الملفات الثابتة فيه
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# لو عندك ملفات static في مجلد ثابت قبل جمعها
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-# Media files (Uploaded files)
-MEDIA_URL = '/media/products/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# Cloudinary Settings
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': config('CLOUDINARY_API_KEY'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET'),
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+MEDIA_URL = '/media/'
+
+
 
 
 # Default primary key field type
