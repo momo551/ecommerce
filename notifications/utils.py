@@ -12,7 +12,6 @@ def send_purchase_notification(order):
     Customer Details:
     - Name: {order.first_name} {order.last_name}
     - Email: {order.email}
-    - Phone: {order.phone}
     - Address: {order.address}, {order.city}, {order.postal_code}
 
     Order Details:

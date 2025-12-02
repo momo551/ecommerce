@@ -74,7 +74,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'api.wsgi.app'
 
 
 # Database
@@ -94,6 +93,15 @@ DATABASES = {
         ssl_require=True
     )
 }
+
+import sys
+
+if 'test' in sys.argv:
+    DATABASES['default']['NAME'] = 'neondb'  # استخدم نفس قاعدة البيانات
+    DATABASES['default']['TEST'] = {
+        'MIRROR': 'default',  # منع Django من إنشاء test database جديدة
+    }
+
 
 
 # Password validation
@@ -154,8 +162,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email settings for Gmail (for production)
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -163,6 +171,3 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-# Temporary email backend for testing (emails will be printed to console)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'test@example.com'
