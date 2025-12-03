@@ -4,6 +4,10 @@
 #
 #    pip-compile requirements.in
 #
+
+Django==4.2.7
+gunicorn
+
 attrs==25.4.0
     # via
     #   outcome
