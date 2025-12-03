@@ -1,20 +1,22 @@
 from django.shortcuts import render
 
+# notifications/views.py
 from django.http import JsonResponse
 from django.views import View
-from utils.llm_client import ResilientLiteLLM
-
-llm = ResilientLiteLLM()
+import json
 
 class ChatAPI(View):
+    def get(self, request):
+        return JsonResponse({"message": "Hello from ChatAPI!"})
+
     def post(self, request):
-        prompt = request.POST.get('prompt', '')
-        if not prompt:
-            return JsonResponse({'error': 'الرجاء إدخال نص.'}, status=400)
-
         try:
-            response = llm.chat(prompt)
-        except Exception as e:
-            response = f"حدث خطأ أثناء الاتصال بـ LLM: {str(e)}"
+            data = json.loads(request.body)
+            user_input = data.get("input", "")
+        except json.JSONDecodeError:
+            user_input = ""
 
-        return JsonResponse({'prompt': prompt, 'response': response})
+        # هنا تحط المنطق اللي كنت هتستخدمه للـ chat
+        response_text = f"You said: {user_input}"
+
+        return JsonResponse({"response": response_text})

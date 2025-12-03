@@ -1,10 +1,8 @@
+# notifications/utils.py
 from django.core.mail import send_mail
 from django.conf import settings
 
 def send_purchase_notification(order):
-    """
-    Send an email notification to the admin when a purchase is made.
-    """
     subject = f'New Purchase Notification - Order #{order.id}'
     message = f"""
     A new purchase has been made.
@@ -24,11 +22,10 @@ def send_purchase_notification(order):
 
     message += f"\nOrder Date: {order.created}"
 
-    # Send email to admin
     send_mail(
         subject,
         message,
         settings.DEFAULT_FROM_EMAIL,
-        ['momo55265526@gmail.com'],  # Admin email address
+        ['momo55265526@gmail.com'],
         fail_silently=False,
     )
