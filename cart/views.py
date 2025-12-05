@@ -7,7 +7,7 @@ def cart_detail(request):
     cart_items = []
     total_price = 0
     for pid, qty in cart.items():
-        try:
+        try:  
             p = Product.objects.get(id=pid)
             item_total = p.price * qty
             total_price += item_total
