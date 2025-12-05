@@ -1,8 +1,8 @@
+from products.models import Product
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
 
 def cart_detail(request):
-    from products.models import Product
     cart = request.session.get('cart', {})
     cart_items = []
     total_price = 0
@@ -18,7 +18,6 @@ def cart_detail(request):
 
 @require_POST
 def cart_add(request, product_id):
-    from products.models import Product
     cart = request.session.get('cart', {})
     product = get_object_or_404(Product, id=product_id)
     qty = int(request.POST.get('quantity', 1))
