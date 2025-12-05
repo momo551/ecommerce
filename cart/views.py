@@ -18,6 +18,7 @@ def cart_detail(request):
 
 @require_POST
 def cart_add(request, product_id):
+    from products.models import Product
     cart = request.session.get('cart', {})
     product = get_object_or_404(Product, id=product_id)
     qty = int(request.POST.get('quantity', 1))
