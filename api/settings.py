@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=cldztbc4jg&xl0!x673!*v2_=pclseu)=7*f#d0#zs-h^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['127.0.0.1,elshapar-j3tx-kb7d77hwc-momo551s-projects.vercel.app']
 
@@ -178,4 +178,3 @@ EMAIL_HOST_USER = ('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = ('EMAIL_HOST_PASSWORD')
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-print('ALLOWED_HOSTS:', ALLOWED_HOSTS)
