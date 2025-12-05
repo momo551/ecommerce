@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
-from .models import Category, Product
 
 def product_list(request, category_slug=None):
+    from .models import Category, Product
     category = None
     categories = Category.objects.all()
     products = Product.objects.filter(available=True)

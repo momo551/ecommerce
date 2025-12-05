@@ -2,11 +2,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Order, OrderItem
-from products.models import Product
 from notifications.utils import send_purchase_notification
 
 @login_required
 def checkout(request):
+    from products.models import Product
     # Get cart from session
     cart = request.session.get('cart', {})
     
