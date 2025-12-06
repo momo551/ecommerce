@@ -1,11 +1,15 @@
-# TODO for Creating Test for Notifications App
+# Refactoring Django E-commerce Project
 
-- [x] Import necessary modules in notifications/tests.py (TestCase, mail, send_purchase_notification, Order, OrderItem, Product, User)
-- [x] Create a test method test_send_purchase_notification in TestCase class
-- [x] In the test method, create a User instance
-- [x] Create a Product instance
-- [x] Create an Order instance linked to the user
-- [x] Create an OrderItem instance linked to the order and product
-- [x] Call send_purchase_notification(order)
-- [x] Assert that one email was sent (len(mail.outbox) == 1)
-- [x] Assert the email subject, body contains expected content, and recipient is 'admin@gmail.com'
+## Steps to Complete
+
+- [x] Create cart/services.py with cart calculation logic
+- [x] Refactor cart/views.py to use cart/services.py
+- [x] Create orders/services.py with order creation logic
+- [x] Refactor orders/views.py to use orders/services.py and optimize queries
+- [x] Create notifications/services.py for chat API logic
+- [x] Refactor notifications/views.py to use notifications/services.py
+- [x] Minor refactoring in products/views.py (remove inline imports, add docstrings)
+- [x] Minor refactoring in accounts/views.py (add docstrings, improve error handling)
+- [ ] Test refactored code to ensure functionality is preserved
+- [ ] Run Django tests if any exist
+- [ ] Check for linting issues

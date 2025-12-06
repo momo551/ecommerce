@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
+from decimal import Decimal
 from products.models import Category, Product
 from .models import Order, OrderItem
 
@@ -49,7 +50,7 @@ class OrderModelTest(TestCase):
         self.assertEqual(str(self.order_item), str(self.order_item.id))
     
     def test_order_total_cost(self):
-        expected_total = 19.99 * 2  # price * quantity
+        expected_total = Decimal('19.99') * 2  # price * quantity
         self.assertEqual(self.order.get_total_cost(), expected_total)
 
 class OrderViewsTest(TestCase):

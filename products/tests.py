@@ -24,6 +24,7 @@ class ProductModelTest(TestCase):
         self.product = Product.objects.create(
             category=self.category,
             name='Test Product',
+            slug='test-product',
             description='Test product description',
             price=19.99
         )
@@ -46,6 +47,7 @@ class ProductViewsTest(TestCase):
         self.product = Product.objects.create(
             category=self.category,
             name='Test Product',
+            slug='test-product',
             description='Test product description',
             price=19.99
         )
@@ -65,11 +67,24 @@ class ProductViewsTest(TestCase):
         self.assertContains(response, 'Test Product')
     
     def test_product_detail_page(self):
-        response = self.client.get(reverse('products:product_detail', args=[self.product.id]))
+        response = self.client.get(reverse('products:product_detail', args=[self.product.id, self.product.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Test Product')
-    
+
     def test_search_functionality(self):
-        response = self.client.get(reverse('products:search_results'), {'q': 'Test'})
+        response = self.client.get(reverse('products:search'), {'q': 'Test'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Test Product')
+
+
+class CircularImportTest(TestCase):
+    def test_no_circular_import_in_products_models(self):
+        """
+        Test to ensure there are no circular imports in products.models
+        """
+        try:
+            import products.models
+        except ImportError as e:
+            self.fail(f"Circular import detected in products.models: {e}")
+        else:
+            self.assertTrue(True)

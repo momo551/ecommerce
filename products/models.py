@@ -1,10 +1,6 @@
 from django.db import models
 from django.urls import reverse
 
-class Product(models.Model):
-    name = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='products/')
-
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100, unique=True)

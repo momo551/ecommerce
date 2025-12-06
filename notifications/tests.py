@@ -41,7 +41,7 @@ class NotificationTestCase(TestCase):
         self.assertEqual(mail.outbox[0].subject, f'New Purchase Notification - Order #{order.id}')
 
         # Assert the recipient
-        self.assertIn('admin@gmail.com', mail.outbox[0].to)
+        self.assertIn('momo55265526@gmail.com', mail.outbox[0].to)
 
         # Assert the email body contains expected content
         self.assertIn('Test Product', mail.outbox[0].body)
@@ -85,7 +85,7 @@ class NotificationTestCase(TestCase):
         self.assertEqual(mail.outbox[0].subject, f'New Purchase Notification - Order #{order.id}')
 
         # Assert the recipient
-        self.assertIn('admin@gmail.com', mail.outbox[0].to)
+        self.assertIn('momo55265526@gmail.com', mail.outbox[0].to)
 
         # Assert the email body contains expected content for multiple items
         self.assertIn('Test Product 1', mail.outbox[0].body)

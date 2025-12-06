@@ -11,7 +11,7 @@ def create_user_profile(sender, instance, created, **kwargs):
     هذا الـ signal ينشئ Profile تلقائيًا لكل مستخدم جديد.
     """
     if created:
-        Profile.objects.create(user=instance)
+        Profile.objects.get_or_create(user=instance)
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):

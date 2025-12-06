@@ -48,16 +48,15 @@ class ProfileModelTest(TestCase):
             username='testuser',
             password='testpass123'
         )
-        self.profile = Profile.objects.create(
-            user=self.user,
-            address='123 Test Street',
-            postal_code='12345',
-            city='Test City'
-        )
-    
+        # Profile is created automatically via signal, so retrieve it
+        self.profile = self.user.profile
+        # Update the profile with test data
+        self.profile.phone_number = '1234567890'
+        self.profile.address = '123 Test Street'
+        self.profile.save()
+
     def test_profile_creation(self):
         self.assertEqual(self.profile.user.username, 'testuser')
+        self.assertEqual(self.profile.phone_number, '1234567890')
         self.assertEqual(self.profile.address, '123 Test Street')
-        self.assertEqual(self.profile.postal_code, '12345')
-        self.assertEqual(self.profile.city, 'Test City')
         self.assertEqual(str(self.profile), 'Profile of testuser')

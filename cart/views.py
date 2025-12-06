@@ -1,33 +1,35 @@
-from products.models import Product
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
 
 def cart_detail(request):
+    """
+    Display the cart details including items and total price.
+    """
+    from .services import get_cart_items_and_total
     cart = request.session.get('cart', {})
-    cart_items = []
-    total_price = 0
-    for pid, qty in cart.items():
-        try:  
-            p = Product.objects.get(id=pid)
-            item_total = p.price * qty
-            total_price += item_total
-            cart_items.append({'product': p, 'quantity': qty, 'total_price': item_total})
-        except Product.DoesNotExist:
-            continue
+    cart_items, total_price = get_cart_items_and_total(cart)
     return render(request, 'cart/detail.html', {'cart_items': cart_items, 'total_price': total_price})
 
 @require_POST
 def cart_add(request, product_id):
+    """
+    Add a product to the cart or increase its quantity.
+    """
+    from products.models import Product
     cart = request.session.get('cart', {})
     product = get_object_or_404(Product, id=product_id)
     qty = int(request.POST.get('quantity', 1))
-    cart[str(product_id)] = cart.get(str(product_id), 0) + qty
+    if qty > 0:
+        cart[str(product_id)] = cart.get(str(product_id), 0) + qty
     request.session['cart'] = cart
     request.session.modified = True
     return redirect('cart:cart_detail')
 
 @require_POST
 def cart_remove(request, product_id):
+    """
+    Remove a product from the cart.
+    """
     cart = request.session.get('cart', {})
     cart.pop(str(product_id), None)
     request.session['cart'] = cart
