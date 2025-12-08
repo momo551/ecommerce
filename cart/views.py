@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
+from django.http import JsonResponse
 
 def cart_detail(request):
     """
@@ -23,7 +24,20 @@ def cart_add(request, product_id):
         cart[str(product_id)] = cart.get(str(product_id), 0) + qty
     request.session['cart'] = cart
     request.session.modified = True
-    return redirect('cart:cart_detail')
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # AJAX request
+        cart_items_count = sum(cart.values())
+        from .services import get_cart_items_and_total
+        _, total_price = get_cart_items_and_total(cart)
+        return JsonResponse({
+            'success': True,
+            'cart_items_count': cart_items_count,
+            'total_price': f'${total_price:.2f}'
+        })
+    else:
+        # Regular POST request
+        return redirect('cart:cart_detail')
 
 @require_POST
 def cart_remove(request, product_id):
@@ -46,4 +60,15 @@ def cart_update(request, product_id):
         cart[str(product_id)] = qty
     request.session['cart'] = cart
     request.session.modified = True
-    return redirect('cart:cart_detail')
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # AJAX request
+        from .services import get_cart_items_and_total
+        _, total_price = get_cart_items_and_total(cart)
+        return JsonResponse({
+            'success': True,
+            'total_price': f'${total_price:.2f}'
+        })
+    else:
+        # Regular POST request
+        return redirect('cart:cart_detail')

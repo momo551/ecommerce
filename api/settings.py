@@ -32,6 +32,7 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
+    'testserver',  # For Django test client
     '.vercel.app'  # يسمح بأي دومين فرعي على Vercel
 ]
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
