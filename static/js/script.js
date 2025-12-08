@@ -87,6 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((data) => {
           // مفيش رسائل أو alert نهائيًا
           console.log("Product added silently.");
+          window.location.href = "/cart/";
         })
         .catch((error) => console.error("Error:", error));
     });
