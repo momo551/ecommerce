@@ -1,13 +1,35 @@
 /* Custom styles for the fashion site */
 
+body {
+    background-color: #FBFAF5;
+}
+
+.navbar {
+    background-color: #001019 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand, .nav-link {
+    color: #EAFF01 !important;
+}
+
 /* Product cards */
+.row {
+    perspective: 1000px;
+}
+
 .product-card {
-    transition: transform 0.2s;
+    transition: transform 0.3s, box-shadow 0.3s;
     margin-bottom: 20px;
+    transform-style: preserve-3d;
+    background-color: #EAFF01;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .product-card:hover {
-    transform: scale(1.02);
+    transform: translateY(-10px) rotateX(5deg);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
 }
 
 .product-image {
@@ -25,14 +47,18 @@
 /* Footer */
 footer {
     margin-top: auto;
+    background-color: #001019;
+    color: #EAFF01;
+    box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
 }
 
 /* Profile page */
 .profile-section {
-    background-color: #f8f9fa;
+    background-color: #FBFAF5;
     padding: 20px;
     border-radius: 5px;
     margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* Forms */
@@ -40,27 +66,30 @@ footer {
     max-width: 500px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #f8f9fa;
+    background-color: #FBFAF5;
     border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* Buttons */
 .btn-cart {
-    background-color: #28a745;
-    border-color: #28a745;
+    background-color: #663DE4;
+    border-color: #663DE4;
+    color: #EAFF01;
 }
 
 .btn-cart:hover {
-    background-color: #218838;
-    border-color: #1e7e34;
+    background-color: #5a2db8;
+    border-color: #5a2db8;
 }
 
 .btn-checkout {
-    background-color: #007bff;
-    border-color: #007bff;
+    background-color: #001019;
+    border-color: #001019;
+    color: #EAFF01;
 }
 
 .btn-checkout:hover {
-    background-color: #0069d9;
-    border-color: #0062cc;
+    background-color: #000d14;
+    border-color: #000d14;
 }

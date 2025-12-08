@@ -51,8 +51,8 @@
                         <a href="{{ product.get_absolute_url }}" class="btn btn-primary">View Details</a>
                         <form method="post" action="{% url 'cart:cart_add' product.id %}" style="display: inline;">
                             {% csrf_token %}
-                            <input type="hidden" name="quantity" value="1">
-                            <button type="submit" class="btn btn-cart">Add to Cart</button>
+                            <input type="number" name="quantity" value="1" min="1" style="width: 60px; display: inline;" class="form-control form-control-sm">
+                            <button type="submit" class="btn btn-cart" data-product-id="{{ product.id }}">Add to Cart</button>
                         </form>
                     </div>
                 </div>
