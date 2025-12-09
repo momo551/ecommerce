@@ -33,7 +33,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'testserver',  # For Django test client
-    
+
 ] 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -94,21 +94,22 @@ TEMPLATES = [
 # Note: Django modules for using databases are not support in serverless
 # environments like Vercel. You can use a database over HTTP, hosted elsewhere
 
+# Database (SQLite for PythonAnywhere free plan)
+# ----------------------------------------------
 DATABASES = {
-    'default': dj_database_url.parse(
-        "postgresql://neondb_owner:npg_2xtpcXOhDFS9@ep-late-pond-a44ndk08-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
-        conn_max_age=600,
-        ssl_require=True
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / "db.sqlite3",
+    }
 }
 
-
-
+# Prevent Django from creating a new test database
+import sys
 if 'test' in sys.argv:
-    DATABASES['default']['NAME'] = 'neondb'  # استخدم نفس قاعدة البيانات
     DATABASES['default']['TEST'] = {
-        'MIRROR': 'default',  # منع Django من إنشاء test database جديدة
+        'MIRROR': 'default',
     }
+
 
 
 # settings.py
