@@ -33,7 +33,6 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'testserver',  # For Django test client
-    ''
 ] 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
