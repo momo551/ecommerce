@@ -60,11 +60,12 @@ for image in images:
     # رفع الصورة الجديدة على Cloudinary
     # استبدال الفراغات بشرطة سفلية لتجنب مشاكل في public_id
     safe_public_id = file_name.replace(" ", "_")
-    result = cloudinary.uploader.upload(image_path, public_id=safe_public_id)
+    full_public_id = 'products/' + safe_public_id
+    result = cloudinary.uploader.upload(image_path, public_id=full_public_id)
     secure_url = result['secure_url']
     print(f"Uploaded {image}: {secure_url}")
 
     # تحديث الرابط في قاعدة البيانات
-    product.image = 'products/' + safe_public_id + '.jpg'
+    product.image = full_public_id + '.jpg'
     product.save()
     print(f"Updated Product {product.name} with new image.")
