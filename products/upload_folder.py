@@ -65,6 +65,6 @@ for image in images:
     print(f"Uploaded {image}: {secure_url}")
 
     # تحديث الرابط في قاعدة البيانات
-    product.image = safe_public_id + '.jpg'
+    product.image = 'products/' + safe_public_id + '.jpg'
     product.save()
     print(f"Updated Product {product.name} with new image.")
