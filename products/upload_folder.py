@@ -31,7 +31,8 @@ images = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(fold
 
 # جلب كل أسماء المنتجات
 products = list(Product.objects.all())
-product_names = [p.name for p in products]
+product_names = [p.name.lower() for p in products]
+product_name_map = {p.name.lower(): p.name for p in products}
 
 for image in images:
     image_path = os.path.join(folder_path, image)
@@ -44,7 +45,7 @@ for image in images:
         continue
 
     match_name = match_name[0]  # أقرب تطابق
-    product = Product.objects.get(name=match_name)
+    product = Product.objects.get(name=product_name_map[match_name])
 
     # حذف الصورة القديمة إذا كانت موجودة على Cloudinary
     if product.image and hasattr(product.image, 'url') and product.image.url.startswith("http"):
@@ -64,6 +65,6 @@ for image in images:
     print(f"Uploaded {image}: {secure_url}")
 
     # تحديث الرابط في قاعدة البيانات
-    product.image = secure_url
+    product.image = safe_public_id + '.jpg'
     product.save()
     print(f"Updated Product {product.name} with new image.")
