@@ -19,12 +19,13 @@ class Category(models.Model):
         return reverse('products:category_detail', args=[self.slug])
 
 class Product(models.Model):
-    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
+    category = models.ForeignKey('Category', related_name='products', on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='products/', blank=True)
+    # نحتفظ بـ ImageField لكن نسمح بإدخال URL من Cloudinary
+    image = models.ImageField(upload_to='products/', blank=True, null=True)
     available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -42,3 +43,14 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse('products:product_detail', args=[self.id, self.slug])
+
+    @property
+    def image_url(self):
+        """
+        ترجع URL صالح للعرض:
+        - لو الصورة موجودة محليًا أو على Cloudinary.
+        - لو مش موجودة ترجع رابط افتراضي.
+        """
+        if self.image:
+            return self.image.url if hasattr(self.image, 'url') else self.image
+        return '/static/images/no-image.png'  # ضع صورة افتراضية هنا
