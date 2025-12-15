@@ -1,92 +1,80 @@
 import os
+import re
+import urllib.parse
+from decouple import config
+import cloudinary
+import cloudinary.uploader
 import django
-from django.core.files.base import ContentFile
-import requests
 
-# -------------------------
-# إعداد Django
-# -------------------------
+# إعداد Django للوصول للـ ORM خارج manage.py
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
 django.setup()
 
-# -------------------------
-# استدعاء الموديل
-# -------------------------
 from products.models import Product
-from django.conf import settings
-from django.core.files.storage import default_storage
 
-# -------------------------
-# مسار الصور المحلية
-# -------------------------
-MEDIA_PRODUCTS_PATH = os.path.join(settings.MEDIA_ROOT, 'products')
-ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png']
+# إعداد Cloudinary
+cloudinary.config(
+    cloud_name=config('CLOUDINARY_CLOUD_NAME'),
+    api_key=config('CLOUDINARY_API_KEY'),
+    api_secret=config('CLOUDINARY_API_SECRET')
+)
 
-# -------------------------
-# تنظيف URLs المشوهة
-# -------------------------
-print("=== Cleaning malformed image URLs ===")
-for product in Product.objects.all():
-    if product.image and product.image.url.startswith("/media/https://"):
-        product.image = None
-        product.save()
-        print(f"[RESET] {product.name} → Image URL reset")
+MEDIA_PRODUCTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'media', 'products')
 
-# -------------------------
-# رفع الصور الموجودة محليًا
-# -------------------------
-print("\n=== Uploading local images to Cloudinary ===")
-for product in Product.objects.all():
-    # الحصول على اسم الملف المحلي
-    local_file = None
-    if product.image:
-        # استخدم اسم الملف الحالي إذا موجود
-        local_file = os.path.join(MEDIA_PRODUCTS_PATH, os.path.basename(product.image.name))
-        if not os.path.isfile(local_file):
-            local_file = None
+def normalize_name(name):
+    # تحويل الاسم لحروف صغيرة، الفراغات لـ _، وحذف الرموز الخاصة
+    name = name.lower()
+    name = re.sub(r'[%()\[\]\-]', '', name)
+    name = re.sub(r'\s+', '_', name)
+    return name
 
-    if not local_file:
-        # حاول إيجاد الملف المحلي بناءً على اسم المنتج
-        safe_name_base = product.name.replace(" ", "_")
-        for ext in ALLOWED_EXTENSIONS:
-            candidate_path = os.path.join(MEDIA_PRODUCTS_PATH, safe_name_base + ext)
-            if os.path.isfile(candidate_path):
-                local_file = candidate_path
-                break
+def find_matching_file(product_name):
+    normalized = normalize_name(product_name)
+    for filename in os.listdir(MEDIA_PRODUCTS_DIR):
+        file_normalized = normalize_name(os.path.splitext(filename)[0])
+        if file_normalized == normalized:
+            return os.path.join(MEDIA_PRODUCTS_DIR, filename)
+    return None
 
-    if local_file:
-        try:
-            filename = os.path.basename(local_file)
-            with open(local_file, "rb") as f:
-                product.image.save(
-                    filename,
-                    ContentFile(f.read()),
-                    save=True
-                )
-            print(f"[UPLOADED] {product.name} → {filename}")
-        except Exception as e:
-            print(f"[ERROR] {product.name} → {e}")
-    else:
-        print(f"[MISSING] {product.name} → No local file found")
+def reset_relative_urls():
+    print("=== Resetting old Cloudinary URLs ===")
+    for product in Product.objects.all():
+        if product.image and not str(product.image).startswith("http"):
+            print(f"[RESET RELATIVE] {product.name} → {product.image}")
+            product.image = None
+            product.save()
 
-# -------------------------
-# تحقق بعد الرفع على Cloudinary
-# -------------------------
-print("\n=== Verifying uploaded images on Cloudinary ===")
-for product in Product.objects.all():
-    if product.image:
-        # URL النهائي بعد الحفظ
-        image_url = product.image.url
-        if image_url.startswith("http://") or image_url.startswith("https://"):
+def upload_local_images():
+    print("\n=== Uploading local images to Cloudinary ===")
+    for product in Product.objects.all():
+        if product.image and str(product.image).startswith("http"):
+            continue  # الصورة موجودة على Cloudinary بالفعل
+
+        local_file = find_matching_file(product.name)
+        if local_file:
             try:
-                response = requests.head(image_url)
-                if response.status_code == 200:
-                    print(f"[OK] {product.name} → Cloudinary image exists: {image_url}")
-                else:
-                    print(f"[MISSING] {product.name} → Cloudinary image NOT found: {image_url}")
+                res = cloudinary.uploader.upload(local_file, folder="products")
+                product.image = res['secure_url']
+                product.save()
+                print(f"[UPLOADED] {product.name} → {product.image}")
             except Exception as e:
-                print(f"[ERROR] {product.name} → Error checking image: {e}")
+                print(f"[ERROR] {product.name} → {e}")
         else:
-            print(f"[ERROR] {product.name} → URL is relative (should be absolute): {image_url}")
-    else:
-        print(f"[MISSING] {product.name} → No image assigned")
+            print(f"[MISSING FILE] {product.name} → No matching local image found")
+
+def verify_images():
+    print("\n=== Verifying images ===")
+    for product in Product.objects.all():
+        if product.image:
+            url = str(product.image)
+            if url.startswith("http"):
+                print(f"[OK] {product.name} → {url}")
+            else:
+                print(f"[ERROR] {product.name} → URL is relative or missing: {url}")
+        else:
+            print(f"[MISSING] {product.name} → No image assigned")
+
+if __name__ == "__main__":
+    reset_relative_urls()
+    upload_local_images()
+    verify_images()
