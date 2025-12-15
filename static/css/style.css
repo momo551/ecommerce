@@ -1,16 +1,24 @@
+/* ===== Colors ===== */
+:root {
+    --primary-purple: #663DE4;
+    --primary-yellow: #EAFF01;
+    --primary-dark: #001019;
+    --primary-light: #b8a857;
+}
+
 /* ===== Body & Navbar ===== */
 body {
-    background-color: #FBFAF5;
+    background-color: var(--primary-light);
     font-family: 'Arial', sans-serif;
 }
 
 .navbar {
-    background-color: #001019 !important;
+    background-color: var(--primary-dark) !important;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .navbar-brand, .nav-link {
-    color: #EAFF01 !important;
+    color: var(--primary-yellow) !important;
 }
 
 /* ===== Product Cards & Grid ===== */
@@ -21,7 +29,7 @@ body {
 .product-card {
     transition: transform 0.3s, box-shadow 0.3s;
     margin-bottom: 20px;
-    background-color: #EAFF01;
+    background-color: var(--primary-yellow);
     border: none;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -43,13 +51,8 @@ body {
 }
 
 /* Responsive adjustments */
-@media (max-width: 576px) {
-    .product-image { height: 180px; }
-}
-
-@media (max-width: 768px) {
-    .product-image { height: 190px; }
-}
+@media (max-width: 576px) { .product-image { height: 180px; } }
+@media (max-width: 768px) { .product-image { height: 190px; } }
 
 /* ===== Cart Items ===== */
 .cart-item-image {
@@ -62,8 +65,8 @@ body {
 /* ===== Footer ===== */
 footer {
     margin-top: auto;
-    background-color: #001019;
-    color: #EAFF01;
+    background-color: var(--primary-dark);
+    color: var(--primary-yellow);
     box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
     padding: 20px 0;
     text-align: center;
@@ -71,7 +74,7 @@ footer {
 
 /* ===== Profile & Forms ===== */
 .profile-section, .form-container {
-    background-color: #FBFAF5;
+    background-color: var(--primary-light);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -84,9 +87,9 @@ footer {
 
 /* ===== Buttons ===== */
 .btn-cart {
-    background-color: #663DE4;
-    border-color: #663DE4;
-    color: #EAFF01;
+    background-color: var(--primary-purple);
+    border-color: var(--primary-purple);
+    color: var(--primary-yellow);
     transition: 0.2s;
 }
 
@@ -96,9 +99,9 @@ footer {
 }
 
 .btn-checkout {
-    background-color: #001019;
-    border-color: #001019;
-    color: #EAFF01;
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    color: var(--primary-yellow);
     transition: 0.2s;
 }
 
