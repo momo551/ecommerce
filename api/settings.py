@@ -159,18 +159,15 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Cloudinary (Production)
-from decouple import config
-
 if not DEBUG:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
-        'API_KEY': config('CLOUDINARY_API_KEY'),
-        'API_SECRET': config('CLOUDINARY_API_SECRET'),
+        'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'drr3o4ule'),
+        'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '868852124141479'),
+        'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', 'wyWl9GFCJVR49vq5Itek0KKIjm4'),
     }
 else:
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-
 
 
 
