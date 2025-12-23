@@ -31,7 +31,7 @@ SECRET_KEY= 'mdzl@idc&@j@3rmkj&0tvizeto^^5y0@3!wu1!mxysk=_r0o2l'
 DEBUG = config('DEBUG',default=False, cast=bool)
 # DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['.railway.app', 'localhost', '127.0.0.1']
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
