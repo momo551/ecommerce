@@ -12,3 +12,6 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "api.settings")
 # استدعاء ASGI application
 from django.core.asgi import get_asgi_application
 application = get_asgi_application()
+
+# **Vercel يحتاج متغير باسم app**
+app = application
