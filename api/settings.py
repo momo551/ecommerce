@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'testserver',  # For Django test client
+    '.vercel.app',
 
 ] 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -98,14 +99,13 @@ TEMPLATES = [
 # Database (SQLite for PythonAnywhere free plan)
 # ----------------------------------------------
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / "db.sqlite3",
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,  # يحسن الأداء مع PostgreSQL
+    )
 }
 
 # Prevent Django from creating a new test database
-import sys
 if 'test' in sys.argv:
     DATABASES['default']['TEST'] = {
         'MIRROR': 'default',

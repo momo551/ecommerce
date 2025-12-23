@@ -1,9 +1,9 @@
 /* ===== Colors ===== */
 :root {
-    --primary-purple: #3A3134;
-    --primary-yellow: #EF316D;
-    --primary-dark: #F6A935;
-    --primary-light: #7F2D6F;
+    --primary-purple: #d37997;
+    --primary-yellow: #f3d9bf;
+    --primary-dark: #bba193;
+    --primary-light: #cfc0b1;
 }
 
 /* ===== Body & Navbar ===== */
@@ -18,7 +18,7 @@ body {
 }
 
 .navbar-brand, .nav-link {
-    color: var(--primary-yellow) !important;
+    color: #030303 !important;
 }
 
 /* ===== Product Cards & Grid ===== */
