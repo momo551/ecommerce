@@ -18,7 +18,7 @@ body {
 }
 
 .navbar-brand, .nav-link {
-    color: var(--primary-yellow) !important;
+    color: #030303 !important;
 }
 
 /* ===== Product Cards & Grid ===== */
