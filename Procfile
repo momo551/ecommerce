@@ -1,1 +1,1 @@
-web: gunicorn fashion_site.wsgi
+web: gunicorn api.wsgi

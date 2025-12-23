@@ -30,13 +30,8 @@ SECRET_KEY = config('SECRET_KEY', default='your_default_secret_key')
 DEBUG = config('DEBUG',default=False, cast=bool)
 # DEBUG = True
 
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-    'testserver',  # For Django test client
-    '.vercel.app',
+ALLOWED_HOSTS = ['*']
 
-] 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
@@ -62,6 +57,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
