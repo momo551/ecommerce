@@ -1,60 +1,15 @@
-// Custom JavaScript for the fashion site
+// ===============================
+// Cart & Shop JavaScript (Django)
+// ===============================
 
-// Update item total price on quantity change
-function updateItemTotal(productId, quantity, unitPrice) {
-  const qty = parseInt(quantity);
-  const price = parseFloat(unitPrice);
-  const total = qty * price;
-  const itemTotalElement = document.getElementById(`item-total-${productId}`);
-  if (itemTotalElement) {
-    itemTotalElement.textContent = `$${total.toFixed(2)}`;
-  }
-  updateOverallTotal();
-}
-
-// Update overall cart total
-function updateOverallTotal() {
-  let overallTotal = 0;
-  const itemTotals = document.querySelectorAll('[id^="item-total-"]');
-  itemTotals.forEach((item) => {
-    const totalText = item.textContent.replace("$", "");
-    overallTotal += parseFloat(totalText);
-  });
-  const totalEl = document.getElementById("overall-total");
-  if (totalEl) totalEl.textContent = `$${overallTotal.toFixed(2)}`;
-}
-
-// Update cart quantity
-function updateCartQuantity(productId, quantity) {
-  const csrfToken = getCookie("csrftoken");
-
-  fetch(`/cart/update/${productId}/`, {
-    method: "POST",
-    headers: {
-      "X-CSRFToken": csrfToken,
-      "X-Requested-With": "XMLHttpRequest",
-    },
-    body: new URLSearchParams({ quantity: quantity }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        document.getElementById(`quantity-${productId}`).value = quantity;
-        const overall = document.getElementById("overall-total");
-        if (overall) overall.textContent = data.total_price;
-      }
-    })
-    .catch((error) => console.error("Error:", error));
-}
-
-// Get CSRF token
+// ---------- CSRF ----------
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== "") {
     const cookies = document.cookie.split(";");
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) === name + "=") {
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.startsWith(name + "=")) {
         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
         break;
       }
@@ -63,44 +18,114 @@ function getCookie(name) {
   return cookieValue;
 }
 
-// --- Silent Add to Cart ---
-document.addEventListener("DOMContentLoaded", function () {
-  const addToCartBtn = document.querySelector(".btn-cart");
+// ---------- Update Item Total ----------
+function updateItemTotal(productId, quantity, unitPrice) {
+  const qty = parseInt(quantity);
+  const price = parseFloat(unitPrice);
 
-  if (addToCartBtn) {
-    addToCartBtn.addEventListener("click", function (e) {
-      e.preventDefault(); // امنع الـ submit العادي
+  if (isNaN(qty) || qty < 1 || isNaN(price)) return;
+
+  const total = qty * price;
+  const itemTotalEl = document.getElementById(`item-total-${productId}`);
+
+  if (itemTotalEl) {
+    itemTotalEl.textContent = `$${total.toFixed(2)}`;
+  }
+
+  updateOverallTotal();
+}
+
+// ---------- Update Overall Total ----------
+function updateOverallTotal() {
+  let overallTotal = 0;
+
+  document.querySelectorAll('[id^="item-total-"]').forEach((item) => {
+    const value = parseFloat(item.textContent.replace("$", ""));
+    if (!isNaN(value)) {
+      overallTotal += value;
+    }
+  });
+
+  const overallEl = document.getElementById("overall-total");
+  if (overallEl) {
+    overallEl.textContent = `$${overallTotal.toFixed(2)}`;
+  }
+}
+
+// ---------- Update Quantity (AJAX) ----------
+function updateCartQuantity(productId, quantity) {
+  if (quantity < 1) return;
+
+  fetch(`/cart/update/${productId}/`, {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": getCookie("csrftoken"),
+      "X-Requested-With": "XMLHttpRequest",
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({ quantity }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        const overallEl = document.getElementById("overall-total");
+        if (overallEl && data.total_price) {
+          overallEl.textContent = data.total_price;
+        }
+      }
+    })
+    .catch((err) => console.error("Update error:", err));
+}
+
+// ---------- Silent Add to Cart ----------
+function initAddToCart() {
+  document.querySelectorAll(".btn-cart").forEach((btn) => {
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
 
       const form = this.closest("form");
-      const productId = this.getAttribute("data-product-id");
+      const productId = this.dataset.productId;
       const formData = new FormData(form);
 
       fetch(`/cart/add/${productId}/`, {
         method: "POST",
         headers: {
-          "X-Requested-With": "XMLHttpRequest",
           "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+          "X-Requested-With": "XMLHttpRequest",
         },
         body: formData,
       })
-        .then((response) => response.json())
+        .then((res) => res.json())
         .then((data) => {
-          // مفيش رسائل أو alert نهائيًا
-          console.log("Product added silently.");
+          // إضافة صامتة
           window.location.href = "/cart/";
         })
-        .catch((error) => console.error("Error:", error));
-    });
-  }
-
-  // Add event listeners to quantity inputs
-  const quantityInputs = document.querySelectorAll('input[id^="quantity-"]');
-  quantityInputs.forEach((input) => {
-    input.addEventListener("input", function () {
-      const productId = this.getAttribute("data-product-id");
-      const unitPrice = parseFloat(this.getAttribute("data-unit-price"));
-      const quantity = this.value;
-      updateItemTotal(productId, quantity, unitPrice);
+        .catch((err) => console.error("Add error:", err));
     });
   });
+}
+
+// ---------- Quantity Listeners ----------
+function initQuantityInputs() {
+  document.querySelectorAll('input[id^="quantity-"]').forEach((input) => {
+    input.addEventListener("change", function () {
+      const productId = this.dataset.productId;
+      const unitPrice = this.dataset.unitPrice;
+      const quantity = parseInt(this.value);
+
+      if (isNaN(quantity) || quantity < 1) {
+        this.value = 1;
+        return;
+      }
+
+      updateItemTotal(productId, quantity, unitPrice);
+      updateCartQuantity(productId, quantity);
+    });
+  });
+}
+
+// ---------- Init ----------
+document.addEventListener("DOMContentLoaded", function () {
+  initAddToCart();
+  initQuantityInputs();
 });

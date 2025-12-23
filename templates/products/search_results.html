@@ -27,7 +27,7 @@
                             <form method="post" action="{% url 'cart:cart_add' product.id %}" class="d-flex align-items-center">
                                 {% csrf_token %}
                                 <input type="number" name="quantity" value="1" min="1" class="form-control form-control-sm me-2" style="width: 60px;">
-                                <button type="submit" class="btn btn-cart btn-sm">Add</button>
+                                <button type="submit" class="btn btn-cart btn-sm" data-product-id="{{ product.id }}">Add</button>
                             </form>
                         </div>
                     </div>
