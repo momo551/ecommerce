@@ -3,12 +3,16 @@
     --primary-purple: #663DE4;
     --primary-yellow: #EAFF01;
     --primary-dark: #001019;
-    --primary-light: #8d22d0;
+    /* --primary-light: #8d22d0; */
 }
 
 /* ===== Body & Navbar ===== */
 body {
-    background-color: var(--primary-light);
+    /* background-color: var(--primary-light); */
+    background-image: url('{% static "images/background.jpg" %}');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     font-family: 'Arial', sans-serif;
 }
 
