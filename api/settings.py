@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = config('SECRET_KEY')
-SECRET_KEY= 'mdzl@idc&@j@3rmkj&0tvizeto^^5y0@3!wu1!mxysk=_r0o2l'
+SECRET_KEY= config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG',default=False, cast=bool)
@@ -162,9 +162,9 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 if not DEBUG:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'drr3o4ule'),
-        'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '868852124141479'),
-        'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', 'wyWl9GFCJVR49vq5Itek0KKIjm4'),
+        'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+        'API_KEY': config('CLOUDINARY_API_KEY'),
+        'API_SECRET': config('CLOUDINARY_API_SECRET'),
     }
 else:
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
