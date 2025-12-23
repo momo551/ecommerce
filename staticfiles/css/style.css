@@ -1,18 +1,14 @@
 /* ===== Colors ===== */
 :root {
-    --primary-purple: #663DE4;
-    --primary-yellow: #EAFF01;
-    --primary-dark: #001019;
-    /* --primary-light: #8d22d0; */
+    --primary-purple: #3A3134;
+    --primary-yellow: #EF316D;
+    --primary-dark: #F6A935;
+    --primary-light: #7F2D6F;
 }
 
 /* ===== Body & Navbar ===== */
 body {
-    /* background-color: var(--primary-light); */
-    background-image: url('{% static "images/background.jpg" %}');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-color: var(--primary-light);
     font-family: 'Arial', sans-serif;
 }
 
