@@ -31,17 +31,18 @@ SECRET_KEY= config('SECRET_KEY')
 DEBUG = config('DEBUG',default=False, cast=bool)
 # DEBUG = True
 
-ALLOWED_HOSTS = ['.railway.app', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['.devtunnels.ms', 'localhost', '127.0.0.1']
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://*.up.railway.app',
+    'https://znvs9ft0-8000.uks1.devtunnels.ms',
 ]
+
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-
+CSRF_COOKIE_SAMESITE = 'Lax'
 
 # Application definition
 
