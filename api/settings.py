@@ -15,67 +15,53 @@ from decouple import config
 import os
 import sys
 import dj_database_url
-import socket
 
-# -------------------------
-# Base
-# -------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', default=False, cast=bool)
+# DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = True
 
-# -------------------------
-# Detect Environment
-# -------------------------
-ENVIRONMENT = "local"  # default
+# ---------- Environment ----------
+# قيم ممكنة: "local", "devtunnel", "production"
+ENVIRONMENT = config('ENVIRONMENT', default='local')
 
-HOSTNAME = socket.gethostname()
-DEV_TUNNEL = False
-PRODUCTION = False
+# ---------- Hosts ----------
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '.devtunnels.ms',   # يغطي أي dev tunnel
+    '.railway.app',     # للإنتاج
+]
 
-# Detect Dev Tunnel
-if "devtunnels.ms" in HOSTNAME or "znvs9ft0-8000" in HOSTNAME:
-    ENVIRONMENT = "devtunnel"
-    DEV_TUNNEL = True
-
-# Detect Production (Railway) by env var or domain)
-if ".railway.app" in os.environ.get("RAILWAY_ENV", ""):
-    ENVIRONMENT = "production"
-    PRODUCTION = True
-
-# -------------------------
-# Allowed Hosts
-# -------------------------
+# ---------- CSRF & Session ----------
 if ENVIRONMENT == "local":
-    ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
-elif ENVIRONMENT == "devtunnel":
-    ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".devtunnels.ms"]
-elif ENVIRONMENT == "production":
-    ALLOWED_HOSTS = [".railway.app"]
-
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-# -------------------------
-# CSRF / Cookies
-# -------------------------
-if ENVIRONMENT == "local":
-    CSRF_TRUSTED_ORIGINS = []
+    CSRF_TRUSTED_ORIGINS = [
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        "https://znvs9ft0-8000.uks1.devtunnels.ms/",
+        
+    ]
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
 elif ENVIRONMENT == "devtunnel":
-    CSRF_TRUSTED_ORIGINS = ["https://*.devtunnels.ms"]
+    CSRF_TRUSTED_ORIGINS = [
+        "https://*.devtunnels.ms",
+        "http://localhost:8000",  # أثناء اختبار local قبل tunnel
+    ]
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
 elif ENVIRONMENT == "production":
-    CSRF_TRUSTED_ORIGINS = ["https://*.railway.app"]
+    CSRF_TRUSTED_ORIGINS = [
+        "https://*.railway.app",
+    ]
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
 
 CSRF_COOKIE_SAMESITE = 'Lax'
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# -------------------------
-# Installed Apps
-# -------------------------
+# ---------- Installed Apps ----------
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -92,9 +78,6 @@ INSTALLED_APPS = [
     'cloudinary_storage',
 ]
 
-# -------------------------
-# Middleware
-# -------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -109,9 +92,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'api.urls'
 WSGI_APPLICATION = 'api.wsgi.application'
 
-# -------------------------
-# Templates
-# -------------------------
+# ---------- Templates ----------
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -128,51 +109,23 @@ TEMPLATES = [
     },
 ]
 
-# -------------------------
-# Database
-# -------------------------
+# ---------- Database ----------
 DATABASES = {
     'default': dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
     )
 }
-
 if 'test' in sys.argv:
     DATABASES['default']['TEST'] = {'MIRROR': 'default'}
 
-# -------------------------
-# API Keys
-# -------------------------
-LITELLML_API_KEY = "YOUR_API_KEY_HERE"
-
-# -------------------------
-# Password Validation
-# -------------------------
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
-]
-
-# -------------------------
-# Internationalization
-# -------------------------
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_TZ = True
-
-# -------------------------
-# Static & Media
-# -------------------------
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# ---------- Static & Media ----------
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-if not DEBUG:
+if ENVIRONMENT == "production":
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     CLOUDINARY_STORAGE = {
         'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
@@ -182,14 +135,22 @@ if not DEBUG:
 else:
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
-# -------------------------
-# Default Auto Field
-# -------------------------
+# ---------- Auth ----------
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
+]
+
+# ---------- Internationalization ----------
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# -------------------------
-# Email (Gmail)
-# -------------------------
+# ---------- Email ----------
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587

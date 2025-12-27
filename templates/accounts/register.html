@@ -12,25 +12,25 @@
 
                 <div class="mb-3">
                     <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
-                    {{ form.username }}
+                    {{ form.username|add_class:"form-control" }}
                     <div id="error-username" class="text-danger"></div>
                 </div>
 
                 <div class="mb-3">
                     <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
-                    {{ form.email }}
+                    {{ form.email|add_class:"form-control" }}
                     <div id="error-email" class="text-danger"></div>
                 </div>
 
                 <div class="mb-3">
                     <label for="{{ form.password1.id_for_label }}" class="form-label">Password</label>
-                    {{ form.password1 }}
+                    {{ form.password1|add_class:"form-control" }}
                     <div id="error-password1" class="text-danger"></div>
                 </div>
 
                 <div class="mb-3">
                     <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password</label>
-                    {{ form.password2 }}
+                    {{ form.password2|add_class:"form-control" }}
                     <div id="error-password2" class="text-danger"></div>
                 </div>
 
@@ -43,4 +43,17 @@
         </div>
     </div>
 </div>
+
+<script>
+// ---------- Initialize AJAX for this form ----------
+document.addEventListener("DOMContentLoaded", function() {
+    handleAjaxForm("register-form", function(data){
+        if(data.redirect_url){
+            window.location.href = data.redirect_url;
+        } else if(data.message){
+            alert(data.message);
+        }
+    });
+});
+</script>
 {% endblock %}
