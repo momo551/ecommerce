@@ -32,6 +32,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '.devtunnels.ms',   # يغطي أي dev tunnel
     '.railway.app',     # للإنتاج
+    ' https://web-production-24041.up.railway.app/'
 ]
 
 # ---------- CSRF & Session ----------
