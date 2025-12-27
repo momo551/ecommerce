@@ -1,5 +1,5 @@
 // ===============================
-// Django AJAX Forms + Cart
+// Django AJAX Forms + Cart (Bootstrap Ready)
 // ===============================
 
 // ---------- CSRF ----------
@@ -25,6 +25,9 @@ function handleAjaxForm(formId, onSuccess=null) {
 
     form.addEventListener("submit", function(e){
         e.preventDefault();
+        const submitBtn = form.querySelector("button[type='submit']");
+        if(submitBtn) submitBtn.disabled = true;
+
         const formData = new FormData(form);
 
         fetch(form.action || window.location.href, {
@@ -39,6 +42,7 @@ function handleAjaxForm(formId, onSuccess=null) {
         .then(data => {
             // مسح الأخطاء القديمة
             form.querySelectorAll(".text-danger").forEach(el => el.textContent = "");
+            if(submitBtn) submitBtn.disabled = false;
 
             if(data.success) {
                 if(onSuccess) onSuccess(data);
@@ -52,7 +56,10 @@ function handleAjaxForm(formId, onSuccess=null) {
                 }
             }
         })
-        .catch(err => console.error(`Form ${formId} error:`, err));
+        .catch(err => {
+            if(submitBtn) submitBtn.disabled = false;
+            console.error(`Form ${formId} error:`, err);
+        });
     });
 }
 
@@ -89,7 +96,8 @@ function initCart() {
             })
             .then(res => res.json())
             .then(() => {
-                window.location.href="/cart/"; // أو عرض رسالة AJAX بدون إعادة تحميل
+                // بدل إعادة تحميل يمكن عرض رسالة أو تحديث السلة مباشرة
+                window.location.href="/cart/";
             })
             .catch(err => console.error("Add to cart error:", err));
         });
@@ -138,13 +146,15 @@ document.addEventListener("DOMContentLoaded", function(){
     // AJAX login / register
     handleAjaxForm("login-form", data => window.location.href=data.redirect_url || '/');
     handleAjaxForm("register-form", data => window.location.href=data.redirect_url || '/');
+
     // AJAX profile update
     handleAjaxForm("profile-form", data => {
         if(data.success) {
             alert('Profile updated successfully!');
-            if(data.updated_fields_html) {
-                // يمكن تحديث الحقول المعروضة في الصفحة مباشرة إذا أرسل السيرفر HTML
-                document.querySelector("#profile-container").innerHTML = data.updated_fields_html;
+            // تحديث محتوى الحقول إذا أرسل السيرفر HTML
+            if(data.updated_fields_html){
+                const container = document.querySelector("#profile-container");
+                if(container) container.innerHTML = data.updated_fields_html;
             }
         }
     });
