@@ -1,8 +1,8 @@
 // ===============================
-// Cart & Shop JavaScript (Django)
+// Django CSRF & Cart/Shop JS
 // ===============================
 
-// ---------- CSRF ----------
+// ---------- CSRF from cookies ----------
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== "") {
@@ -22,15 +22,11 @@ function getCookie(name) {
 function updateItemTotal(productId, quantity, unitPrice) {
   const qty = parseInt(quantity);
   const price = parseFloat(unitPrice);
-
   if (isNaN(qty) || qty < 1 || isNaN(price)) return;
 
   const total = qty * price;
   const itemTotalEl = document.getElementById(`item-total-${productId}`);
-
-  if (itemTotalEl) {
-    itemTotalEl.textContent = `$${total.toFixed(2)}`;
-  }
+  if (itemTotalEl) itemTotalEl.textContent = `$${total.toFixed(2)}`;
 
   updateOverallTotal();
 }
@@ -38,18 +34,13 @@ function updateItemTotal(productId, quantity, unitPrice) {
 // ---------- Update Overall Total ----------
 function updateOverallTotal() {
   let overallTotal = 0;
-
   document.querySelectorAll('[id^="item-total-"]').forEach((item) => {
     const value = parseFloat(item.textContent.replace("$", ""));
-    if (!isNaN(value)) {
-      overallTotal += value;
-    }
+    if (!isNaN(value)) overallTotal += value;
   });
 
   const overallEl = document.getElementById("overall-total");
-  if (overallEl) {
-    overallEl.textContent = `$${overallTotal.toFixed(2)}`;
-  }
+  if (overallEl) overallEl.textContent = `$${overallTotal.toFixed(2)}`;
 }
 
 // ---------- Update Quantity (AJAX) ----------
@@ -61,17 +52,15 @@ function updateCartQuantity(productId, quantity) {
     headers: {
       "X-CSRFToken": getCookie("csrftoken"),
       "X-Requested-With": "XMLHttpRequest",
-      "Content-Type": "application/x-www-form-urlencoded",
+      // لا تضع Content-Type عند استخدام URLSearchParams
     },
     body: new URLSearchParams({ quantity }),
   })
     .then((res) => res.json())
     .then((data) => {
-      if (data.success) {
+      if (data.success && data.total_price) {
         const overallEl = document.getElementById("overall-total");
-        if (overallEl && data.total_price) {
-          overallEl.textContent = data.total_price;
-        }
+        if (overallEl) overallEl.textContent = data.total_price;
       }
     })
     .catch((err) => console.error("Update error:", err));
@@ -90,14 +79,14 @@ function initAddToCart() {
       fetch(`/cart/add/${productId}/`, {
         method: "POST",
         headers: {
-          "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+          "X-CSRFToken": getCookie("csrftoken"),
           "X-Requested-With": "XMLHttpRequest",
         },
-        body: formData,
+        body: formData, // بدون Content-Type
       })
         .then((res) => res.json())
         .then((data) => {
-          // إضافة صامتة
+          // إعادة توجيه بعد الإضافة
           window.location.href = "/cart/";
         })
         .catch((err) => console.error("Add error:", err));
