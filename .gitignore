@@ -5,6 +5,7 @@ __pycache__
 db.sqlite3
 
 # Environments 
+.upload_and_verify_images.py 
 .env 
 .venv 
 env/ 
@@ -16,4 +17,4 @@ venv.bak/
 main.py
 test_cart.py
 test_email.py
-upload_and_verify_images.py
+
