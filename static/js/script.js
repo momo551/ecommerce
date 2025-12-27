@@ -1,5 +1,5 @@
 // ===============================
-// Django CSRF & Cart/Shop JS
+// Django CSRF & Cart/Shop/Login JS
 // ===============================
 
 // ---------- CSRF from cookies ----------
@@ -52,7 +52,6 @@ function updateCartQuantity(productId, quantity) {
     headers: {
       "X-CSRFToken": getCookie("csrftoken"),
       "X-Requested-With": "XMLHttpRequest",
-      // لا تضع Content-Type عند استخدام URLSearchParams
     },
     body: new URLSearchParams({ quantity }),
   })
@@ -82,15 +81,48 @@ function initAddToCart() {
           "X-CSRFToken": getCookie("csrftoken"),
           "X-Requested-With": "XMLHttpRequest",
         },
-        body: formData, // بدون Content-Type
+        body: formData,
       })
         .then((res) => res.json())
-        .then((data) => {
-          // إعادة توجيه بعد الإضافة
+        .then(() => {
           window.location.href = "/cart/";
         })
         .catch((err) => console.error("Add error:", err));
     });
+  });
+}
+
+// ---------- Login Form AJAX ----------
+function initLoginForm() {
+  const loginForm = document.querySelector("form#login-form");
+  if (!loginForm) return;
+
+  loginForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(loginForm);
+
+    fetch(loginForm.action, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": getCookie("csrftoken"),
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          window.location.href = data.redirect_url || "/";
+        } else if (data.errors) {
+          // عرض الأخطاء
+          for (const [field, messages] of Object.entries(data.errors)) {
+            const el = document.getElementById(`error-${field}`);
+            if (el) el.textContent = messages.join(", ");
+          }
+        }
+      })
+      .catch((err) => console.error("Login error:", err));
   });
 }
 
@@ -117,4 +149,5 @@ function initQuantityInputs() {
 document.addEventListener("DOMContentLoaded", function () {
   initAddToCart();
   initQuantityInputs();
+  initLoginForm();
 });
