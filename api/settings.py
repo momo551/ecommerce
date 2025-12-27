@@ -15,38 +15,67 @@ from decouple import config
 import os
 import sys
 import dj_database_url
+import socket
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# -------------------------
+# Base
+# -------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
+SECRET_KEY = config('SECRET_KEY')
+DEBUG = config('DEBUG', default=False, cast=bool)
 
+# -------------------------
+# Detect Environment
+# -------------------------
+ENVIRONMENT = "local"  # default
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
+HOSTNAME = socket.gethostname()
+DEV_TUNNEL = False
+PRODUCTION = False
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = config('SECRET_KEY')
-SECRET_KEY= config('SECRET_KEY')
+# Detect Dev Tunnel
+if "devtunnels.ms" in HOSTNAME or "znvs9ft0-8000" in HOSTNAME:
+    ENVIRONMENT = "devtunnel"
+    DEV_TUNNEL = True
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG',default=False, cast=bool)
-# DEBUG = True
+# Detect Production (Railway) by env var or domain)
+if ".railway.app" in os.environ.get("RAILWAY_ENV", ""):
+    ENVIRONMENT = "production"
+    PRODUCTION = True
 
-ALLOWED_HOSTS = ['.devtunnels.ms', 'localhost', '127.0.0.1']
+# -------------------------
+# Allowed Hosts
+# -------------------------
+if ENVIRONMENT == "local":
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+elif ENVIRONMENT == "devtunnel":
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".devtunnels.ms"]
+elif ENVIRONMENT == "production":
+    ALLOWED_HOSTS = [".railway.app"]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://*.devtunnels.ms',
-]
+# -------------------------
+# CSRF / Cookies
+# -------------------------
+if ENVIRONMENT == "local":
+    CSRF_TRUSTED_ORIGINS = []
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+elif ENVIRONMENT == "devtunnel":
+    CSRF_TRUSTED_ORIGINS = ["https://*.devtunnels.ms"]
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+elif ENVIRONMENT == "production":
+    CSRF_TRUSTED_ORIGINS = ["https://*.railway.app"]
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
 
-
-
-CSRF_COOKIE_SECURE = False
-SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SAMESITE = 'Lax'
 
-# Application definition
-
+# -------------------------
+# Installed Apps
+# -------------------------
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -54,7 +83,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'accounts.apps.AccountsConfig', 
+    'accounts.apps.AccountsConfig',
     'products.apps.ProductsConfig',
     'cart.apps.CartConfig',
     'orders.apps.OrdersConfig',
@@ -63,7 +92,9 @@ INSTALLED_APPS = [
     'cloudinary_storage',
 ]
 
-
+# -------------------------
+# Middleware
+# -------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -78,6 +109,9 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'api.urls'
 WSGI_APPLICATION = 'api.wsgi.application'
 
+# -------------------------
+# Templates
+# -------------------------
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -94,79 +128,50 @@ TEMPLATES = [
     },
 ]
 
-
-
+# -------------------------
 # Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-# Note: Django modules for using databases are not support in serverless
-# environments like Vercel. You can use a database over HTTP, hosted elsewhere
-
-# Database (SQLite for PythonAnywhere free plan)
-# ----------------------------------------------
+# -------------------------
 DATABASES = {
     'default': dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,  # يحسن الأداء مع PostgreSQL
+        conn_max_age=600,
     )
 }
 
-# Prevent Django from creating a new test database
 if 'test' in sys.argv:
-    DATABASES['default']['TEST'] = {
-        'MIRROR': 'default',
-    }
+    DATABASES['default']['TEST'] = {'MIRROR': 'default'}
 
-
-
-# settings.py
+# -------------------------
+# API Keys
+# -------------------------
 LITELLML_API_KEY = "YOUR_API_KEY_HERE"
 
-
-# Password validation
-# https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
-
+# -------------------------
+# Password Validation
+# -------------------------
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
-
+# -------------------------
 # Internationalization
-# https://docs.djangoproject.com/en/4.1/topics/i18n/
-
+# -------------------------
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-
-# Static Files
+# -------------------------
+# Static & Media
+# -------------------------
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-# Media محلي
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Cloudinary (Production)
 if not DEBUG:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     CLOUDINARY_STORAGE = {
@@ -177,20 +182,18 @@ if not DEBUG:
 else:
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
-
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
-
+# -------------------------
+# Default Auto Field
+# -------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Email settings for Gmail (for production)
+# -------------------------
+# Email (Gmail)
+# -------------------------
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
-
 DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER', default='')
