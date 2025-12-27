@@ -36,8 +36,9 @@ ALLOWED_HOSTS = ['.devtunnels.ms', 'localhost', '127.0.0.1']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://znvs9ft0-8000.uks1.devtunnels.ms',
+    'https://*.devtunnels.ms',
 ]
+
 
 
 CSRF_COOKIE_SECURE = True
